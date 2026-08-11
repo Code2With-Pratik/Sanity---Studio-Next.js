@@ -1,57 +1,58 @@
-Next.js quick start
+# Sanity + Next.js Project Documentation
 
-Setting up your studio
+This repository contains two adjacent projects:
 
-1
-Create a new Studio with Sanity CLI
-Run the command in your Terminal to initialize your project on your local computer.
+- `studio-hello-world`: Sanity Studio for authoring content
+- `nextjs-hello-world`: Next.js App for rendering published content
 
-See the documentation if you are having issues with the CLI.
+---
 
+## 1. Prerequisites
+
+- Node.js installed
+- Sanity CLI available (`npm install -g @sanity/cli` or use `npx`)
+- A Sanity project ID and dataset
+
+---
+
+## 2. Sanity Studio Setup
+
+### 2.1 Create the Studio
+
+Run the following command from the repository root:
+
+```bash
 npm create sanity@latest -- --dataset production --template clean --typescript --output-path studio-hello-world
 cd studio-hello-world
+```
 
+### 2.2 Run the Studio locally
 
-2
-Run Sanity Studio locally
-Inside the directory of the Studio, start the development server by running the following command.
+From `studio-hello-world`:
 
-npm
-pnpm
-yarn
-bun
-# in studio-hello-world 
+```bash
 npm run dev
+```
 
-3
-Log in to the Studio
-Open the Studio running locally in your browser from http://localhost:3333.
+Open the Studio in your browser at:
 
-You should now see a screen prompting you to log in to the Studio. Use the same service (Google, GitHub, or email) that you used when you logged in to the CLI.
+```text
+http://localhost:3333
+```
 
-Defining a schema
+### 2.3 Define the Post schema
 
-The Sanity Studio can only interact with documents in a dataset for which it has schema types registered in its configuration. It currently has none.
+Create the file:
 
+```text
+studio-hello-world/schemaTypes/postType.ts
+```
 
-Next.js quick start
-Last updated April 16, 2026
-Defining a schema
+Paste this content:
 
-Copy article
+```ts
+import { defineField, defineType } from 'sanity';
 
-The Sanity Studio can only interact with documents in a dataset for which it has schema types registered in its configuration. It currently has none.
-
-
-10
-10
-
-1
-Create a new document type
-Create a new file in your Studio’s schemaTypes folder called postType.ts with the code below which contains a set of fields for a new post document type.
-
-/studio-hello-world/schemaTypes/postType.ts
-import {defineField, defineType} from 'sanity'
 export const postType = defineType({
   name: 'post',
   title: 'Post',
@@ -65,7 +66,7 @@ export const postType = defineType({
     defineField({
       name: 'slug',
       type: 'slug',
-      options: {source: 'title'},
+      options: { source: 'title' },
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -81,101 +82,126 @@ export const postType = defineType({
     defineField({
       name: 'body',
       type: 'array',
-      of: [{type: 'block'}],
+      of: [{ type: 'block' }],
     }),
   ],
-})
+});
+```
 
+### 2.4 Register the schema
 
-2
-Register the post schema type to the Studio schema
-Now you can import this document type into the schemaTypes array in the index.ts file in the same folder.
+Open:
 
-/studio-hello-world/schemaTypes/index.ts
-import {postType} from './postType'
-export const schemaTypes = [postType]
+```text
+studio-hello-world/schemaTypes/index.ts
+```
 
-3
-Publish your first document
-When you save these two files, your Studio should automatically reload and show your first document type. Click the + symbol at the top left to create and publish a new post document.
+Update it to import and export the new schema:
 
+```ts
+import { postType } from './postType';
 
-Displaying content in Next.js
+export const schemaTypes = [postType];
+```
 
-1
-Install a new Next.js application
-If you have an existing application, skip this first step and adapt the rest of the lesson to install Sanity dependencies to fetch and render content.
+### 2.5 Publish your first document
 
-Run the following in a new tab or window in your Terminal (keep the Studio running) to create a new Next.js application with Tailwind CSS and TypeScript.
+Once the schema is saved, the Studio should reload automatically. Click the `+` button to create and publish a new `Post` document.
 
-You should now have your Studio and Next.js application in two separate, adjacent folders:
+---
 
-npm
-pnpm
-yarn
-bun
-# outside your studio directory
+## 3. Next.js App Setup
+
+### 3.1 Create the Next.js app
+
+From the repository root, run:
+
+```bash
 npx create-next-app@latest nextjs-hello-world --tailwind --ts --app --src-dir --eslint --import-alias "@/*" --turbopack
 cd nextjs-hello-world
+```
 
-├─ /nextjs-hello-world
-└─ /studio-hello-world
+Your folder structure should look like:
 
-Install Sanity dependencies
-Run the following inside the nextjs-hello-world directory to install:
+```text
+/nextjs-hello-world
+/studio-hello-world
+```
 
-next-sanity a collection of utilities for integrating Next.js with Sanity
-@sanity/image-url helper functions to take image data from Sanity and create a URL
-npm
-pnpm
-yarn
-bun
-# in nextjs-hello-world
+### 3.2 Install Sanity dependencies
+
+From `nextjs-hello-world`:
+
+```bash
 npm install --legacy-peer-deps next-sanity @sanity/image-url @tailwindcss/typography
+```
 
-3
-Start the development server
-Run the following command and open http://localhost:3000 in your browser.
+### 3.3 Run the Next.js app
 
-npm
-pnpm
-yarn
-bun
-# in nextjs-hello-world
+From `nextjs-hello-world`:
+
+```bash
 npm run dev
+```
 
-4
-Configure the Sanity client
-To fetch content from Sanity, you’ll first need to configure a Sanity Client.
+Open the app at:
 
-Create a directory nextjs-hello-world/src/sanity and within it create a client.ts file, with the following code:
+```text
+http://localhost:3000
+```
 
-/nextjs-hello-world/src/sanity/client.ts
-import { createClient } from "next-sanity";
+### 3.4 Configure the Sanity client
+
+Create the folder and file:
+
+```text
+nextjs-hello-world/src/sanity/client.ts
+```
+
+Paste this code:
+
+```ts
+import { createClient } from 'next-sanity';
+
 export const client = createClient({
-  projectId: "YOUR-PROJECT-ID",
-  dataset: "production",
-  apiVersion: "2026-05-15",
+  projectId: 'YOUR-PROJECT-ID',
+  dataset: 'production',
+  apiVersion: '2026-05-15',
   useCdn: false,
 });
+```
 
-5
-Display content on the homepage
-Next.js uses server components for loading data at specific routes. The current home page can be found at src/app/page.tsx.
+Replace `YOUR-PROJECT-ID` with your actual Sanity project ID.
 
-Update it to render a list of posts fetched from your Sanity dataset using the code below.
+---
 
-/nextjs-hello-world/src/app/page.tsx
-import Link from "next/link";
-import { type SanityDocument } from "next-sanity";
-import { client } from "@/sanity/client";
+## 4. Render Sanity Content in Next.js
+
+### 4.1 Display posts on the homepage
+
+Update the home page:
+
+```text
+nextjs-hello-world/src/app/page.tsx
+```
+
+Use this content:
+
+```tsx
+import Link from 'next/link';
+import { type SanityDocument } from 'next-sanity';
+import { client } from '@/sanity/client';
+
 const POSTS_QUERY = `*[
   _type == "post"
   && defined(slug.current)
 ]|order(publishedAt desc)[0...12]{_id, title, slug, publishedAt}`;
+
 const options = { next: { revalidate: 30 } };
+
 export default async function IndexPage() {
   const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
+
   return (
     <main className="container mx-auto min-h-screen max-w-3xl p-8">
       <h1 className="text-4xl font-bold mb-8">Posts</h1>
@@ -192,12 +218,100 @@ export default async function IndexPage() {
     </main>
   );
 }
+```
 
-6
-Display individual posts
-Create a new route for individual post pages.
+### 4.2 Create the dynamic post page
 
-The dynamic value of a slug when visiting /[slug] in the URL is used as a parameter in the GROQ query used by Sanity Client.
+Create the file:
+
+```text
+nextjs-hello-world/src/app/[slug]/page.tsx
+```
+
+Use this content:
+
+```tsx
+import { PortableText, type SanityDocument } from 'next-sanity';
+import { createImageUrlBuilder, type SanityImageSource } from '@sanity/image-url';
+import { client } from '@/sanity/client';
+import Link from 'next/link';
+
+const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]`;
+const { projectId, dataset } = client.config();
+
+const urlFor = (source: SanityImageSource) =>
+  projectId && dataset
+    ? createImageUrlBuilder({ projectId, dataset }).image(source)
+    : null;
+
+const options = { next: { revalidate: 30 } };
+
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await client.fetch<SanityDocument>(POST_QUERY, { slug }, options);
+  const postImageUrl = post.image
+    ? urlFor(post.image)?.width(550).height(310).url()
+    : null;
+
+  return (
+    <main className="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
+      <Link href="/" className="hover:underline">
+        ← Back to posts
+      </Link>
+      {postImageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={postImageUrl}
+          alt={post.title}
+          className="aspect-video rounded-xl"
+          width="550"
+          height="310"
+        />
+      )}
+      <h1 className="text-4xl font-bold mb-8">{post.title}</h1>
+      <div className="prose">
+        <p>Published: {new Date(post.publishedAt).toLocaleDateString()}</p>
+        {Array.isArray(post.body) && <PortableText value={post.body} />}
+      </div>
+    </main>
+  );
+}
+```
+
+---
+
+## 5. Common Issue: 404 on Post Pages
+
+If a published post appears on the homepage but its detail page returns `404`, verify:
+
+1. `src/app/[slug]/page.tsx` exists inside the Next.js App Router folder.
+2. `Link href={`/${post.slug.current}`}` uses the correct slug.
+3. The slug field is set and published in Sanity.
+
+---
+
+## 6. Useful Commands
+
+```bash
+# Run Sanity Studio
+cd studio-hello-world
+npm run dev
+
+# Run Next.js app
+cd nextjs-hello-world
+npm run dev
+```
+
+---
+
+## 7. File reference summary
+
+- `studio-hello-world/schemaTypes/postType.ts`
+- `studio-hello-world/schemaTypes/index.ts`
+- `nextjs-hello-world/src/sanity/client.ts`
+- `nextjs-hello-world/src/app/page.tsx`
+- `nextjs-hello-world/src/app/[slug]/page.tsx`
+
 
 Notice that we’re using Tailwind CSS Typography’s prose class to style the post’s body content. We installed @tailwindcss/typography in the dependencies step. Enable it by adding @plugin "@tailwindcss/typography"; to src/app/globals.css below the existing @import "tailwindcss"; line.
 
